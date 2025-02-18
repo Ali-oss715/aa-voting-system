@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AA Voting System</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@400;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    :root {
+      --primary: #6366f1;
+      --secondary: #8b5cf6;
+      --success: #10b981;
+      --danger: #ef4444;
+      --text: #4b5563;
+      --background: linear-gradient(45deg, var(--primary), var(--secondary));
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: var(--background);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Background Elements */
+    .bg-element {
+      position: absolute;
+      opacity: 0.1;
+      font-size: 2rem;
+      animation: float 8s infinite linear;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translateY(0) rotate(0deg);
+      }
+      25% {
+        transform: translateY(-20px) rotate(5deg);
+      }
+      50% {
+        transform: translateY(20px) rotate(-5deg);
+      }
+      75% {
+        transform: translateY(-10px) rotate(3deg);
+      }
+    }
+
+    /* Container */
+    .container {
+      background: rgba(255, 255, 255, 0.98);
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+      width: 95%;
+      max-width: 500px;
+      margin: 1rem;
+      position: relative;
+      z-index: 2;
+      transition: transform 0.3s ease;
+    }
+
+    .container:hover {
+      transform: translateY(-5px);
+    }
+
+    /* Form Elements */
+    .form-group {
+      margin-bottom: 1.5rem;
+      position: relative;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e5e7eb;
+      border-radius: 10px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+      outline: none;
+    }
+
+    /* Buttons */
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary {
+      background: linear-gradient(45deg, var(--primary), var(--secondary));
+      color: white;
+    }
+
+    .btn-secondary {
+      background: var(--success);
+      color: white;
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Error Messages */
+    .error-msg {
+      color: var(--danger);
+      font-size: 0.9rem;
+      margin-top: 5px;
+      display: none;
+    }
+
+    /* Results Table */
+    .results-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .results-table th,
+    .results-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #f3f4f6;
+    }
+
+    .results-table th {
+      background: var(--primary);
+      color: white;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- Background Elements -->
+  <div id="background-elements"></div>
+
+  <!-- Main Container -->
+  <div class="container">
+    <!-- Landing Section -->
+    <div id="landing">
+      <h1 style="text-align: center; margin-bottom: 2rem; color: var(--text);">
+        🎉 AA Voting System
+      </h1>
+      <button class="btn btn-primary" onclick="showSection('voting')">
+        Start Voting
+      </button>
+      <button class="btn btn-secondary" onclick="showSection('admin')" style="margin-top: 1rem;">
+        Admin Login
+      </button>
+    </div>
+
+    <!-- Voting Section -->
+    <div id="voting" class="hidden">
+      <h2 style="margin-bottom: 1.5rem; color: var(--text);">🗳 Cast Your Vote</h2>
+
+      <div class="form-group">
+        <label>Your Name</label>
+        <input type="text" id="voterName" placeholder="Enter your full name" />
+        <div class="error-msg" id="nameError"></div>
+      </div>
+
+      <div class="form-group">
+        <label>Select Punishment</label>
+        <select id="punishment">
+          <option value="" disabled selected>Select Punishment</option>
+          <option value="Mukka">Mukka</option>
+          <option value="Thappar">Thappar</option>
+          <option value="Thuk">Thuk</option>
+          <option value="Sabhi">Sabhi</option>
+          <option value="Kaan">Kaan [*** ] pkar lo</option>
+        </select>
+        <div class="error-msg" id="punishmentError"></div>
+      </div>
+
+      <button class="btn btn-primary" onclick="castVote()">Submit Vote</button>
+      <button class="btn btn-danger" onclick="showSection('landing')" style="margin-top: 1rem;">
+        Back
+      </button>
+    </div>
+
+    <!-- Admin Section -->
+    <div id="admin" class="hidden">
+      <h2 style="margin-bottom: 1.5rem; color: var(--text);">🔒 Admin Panel</h2>
+
+      <div class="form-group">
+        <label>Admin Password</label>
+        <input type="password" id="adminPass" placeholder="Enter admin password" />
+        <div class="error-msg" id="passError"></div>
+      </div>
+
+      <button class="btn btn-primary" onclick="adminLogin()">Access Results</button>
+
+      <div id="results" class="hidden" style="margin-top: 2rem;">
+        <h3 style="margin-bottom: 1rem; color: var(--text);">📊 Voting Results</h3>
+        <table class="results-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Punishment</th>
+            </tr>
+          </thead>
+          <tbody id="resultsBody"></tbody>
+        </table>
+        <button class="btn btn-danger" onclick="resetVotes()" style="margin-top: 1rem;">
+          Reset All Votes
+        </button>
+      </div>
+
+      <button class="btn btn-secondary" onclick="showSection('landing')" style="margin-top: 1rem;">
+        Back
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // Create Background Elements
+    function createBackground() {
+      const elements = ['🌸', '🍃', '🌿', '💮', 'AA', '🎭', '🎤'];
+      const container = document.getElementById('background-elements');
+
+      for (let i = 0; i < 66; i++) {
+        const element = document.createElement('div');
+        element.className = 'bg-element';
+        element.style.cssText = `
+          left: ${Math.random() * 100}%;
+          top: ${Math.random() * 100}%;
+          animation-duration: ${8 + Math.random() * 10}s;
+          font-size: ${1 + Math.random() * 3}rem;
+          opacity: ${0.1 + Math.random() * 0.2};
+        `;
+        element.textContent = elements[Math.floor(Math.random() * elements.length)];
+        container.appendChild(element);
+      }
+    }
+
+    // Voting System Logic
+    let votes = JSON.parse(localStorage.getItem('aaVotes')) || [];
+
+    function showSection(sectionId) {
+      document.querySelectorAll('.container > div').forEach((div) => {
+        div.classList.add('hidden');
+      });
+      document.getElementById(sectionId).classList.remove('hidden');
+      resetErrors();
+    }
+
+    function castVote() {
+      const name = document.getElementById('voterName').value.trim();
+      const punishment = document.getElementById('punishment').value;
+      const nameError = document.getElementById('nameError');
+      const punishmentError = document.getElementById('punishmentError');
+
+      resetErrors();
+
+      if (!name) {
+        nameError.textContent = 'Please enter your name!';
+        nameError.style.display = 'block';
+        return;
+      }
+
+      if (!punishment) {
+        punishmentError.textContent = 'Please select a punishment!';
+        punishmentError.style.display = 'block';
+        return;
+      }
+
+      if (votes.some(v => v.name.toLowerCase() === name.toLowerCase())) {
+        nameError.textContent = `${name} has already voted!`;
+        nameError.style.display = 'block';
+        return;
+      }
+
+      votes.push({ name, punishment });
+      localStorage.setItem('aaVotes', JSON.stringify(votes));
+      alert('Vote submitted successfully! 🎉');
+      showSection('landing');
+    }
+
+    function adminLogin() {
+      const password = document.getElementById('adminPass').value;
+      const passError = document.getElementById('passError');
+
+      resetErrors();
+
+      if (password === "AA@2024") {
+        document.getElementById('results').classList.remove('hidden');
+        updateResults();
+      } else {
+        passError.textContent = 'Invalid password!';
+        passError.style.display = 'block';
+      }
+    }
+
+    function updateResults() {
+      const tbody = document.getElementById('resultsBody');
+      tbody.innerHTML = votes
+        .map(
+          v => `
+        <tr>
+          <td>${v.name}</td>
+          <td>${v.punishment}</td>
+        </tr>
+      `
+        )
+        .join('');
+    }
+
+    function resetVotes() {
+      if (confirm('Are you sure you want to reset all votes?')) {
+        votes = [];
+        localStorage.setItem('aaVotes', JSON.stringify(votes));
+        updateResults();
+      }
+    }
+
+    function resetErrors() {
+      document.querySelectorAll('.error-msg').forEach(el => {
+        el.style.display = 'none';
+        el.textContent = '';
+      });
+    }
+
+    // Initialize
+    createBackground();
+  </script>
+</body>
+</html>
